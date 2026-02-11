@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Be My Valentine 💖</title>
+
+<style>
+  body {
+    background: linear-gradient(135deg, #ff9a9e, #fad0c4);
+    font-family: 'Comic Sans MS', cursive, sans-serif;
+    text-align: center;
+    height: 100vh;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .screen {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .screen.active {
+    display: flex;
+  }
+
+  h1 {
+    color: white;
+    font-size: 2.8em;
+    margin-bottom: 15px;
+  }
+
+  .photo {
+    width: 220px;
+    border-radius: 20px;
+    margin: 15px 0;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+  }
+
+  button {
+    font-size: 1.4em;
+    padding: 15px 30px;
+    border: none;
+    border-radius: 30px;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+  }
+
+  #yes {
+    background-color: #ff4d6d;
+    color: white;
+    z-index: 10;
+    margin-bottom: 10px;
+  }
+
+  #no {
+    background-color: white;
+    color: #ff4d6d;
+    position: absolute;
+  }
+
+  .heart {
+    position: absolute;
+    font-size: 2em;
+    animation: float 3s ease-in infinite;
+    opacity: 0.9;
+  }
+
+  @keyframes float {
+    0% { transform: translateY(0) scale(1); opacity:0.9; }
+    50% { transform: translateY(-150px) scale(1.3); opacity:1; }
+    100% { transform: translateY(-300px) scale(1); opacity:0; }
+  }
+
+  .spotify {
+    margin-top: 20px;
+    width: 90%;
+    max-width: 320px;
+  }
+
+  #typing {
+    font-size: 1.5em;
+    color: white;
+    margin-top: 15px;
+    min-height: 1.5em;
+  }
+
+  .confetti {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background-color: #fff;
+    pointer-events: none;
+    opacity: 0.9;
+    z-index: 9999;
+    border-radius: 50%;
+  }
+</style>
+</head>
+
+<body>
+
+<!-- SCREEN 1 -->
+<div id="screen1" class="screen active">
+  <h1>baby, will you be my Valentine? 💘</h1>
+  <img src="baby.jpg" class="photo">
+
+  <button id="yes" onclick="sayYes()">YES 💕</button>
+
+  <button id="no"
+    onmouseover="moveNo()"
+    onclick="moveNo()"
+    ontouchstart="moveNo()">
+    No 😢
+  </button>
+</div>
+
+<!-- SCREEN 2 -->
+<div id="screen2" class="screen">
+  <h1>to my special lover !!! 💖💖💖</h1>
+  <img src="baby.jpg" class="photo">
+
+  <div class="spotify">
+    <iframe style="border-radius:12px"
+      src="https://open.spotify.com/embed/track/1dGr1c8CrMLDpV6mPbImSI"
+      width="100%"
+      height="80"
+      frameborder="0"
+      allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+      loading="lazy">
+    </iframe>
+  </div>
+
+  <div id="typing"></div>
+</div>
+
+<script>
+  let escapeCount = 0;
+  let yesScale = 1;
+
+  function moveNo() {
+    escapeCount++;
+    yesScale += 0.2;
+    document.getElementById("yes").style.transform = `scale(${yesScale})`;
+
+    if (escapeCount >= 5) {
+      sayYes();
+      return;
+    }
+
+    const noBtn = document.getElementById("no");
+    const maxX = window.innerWidth - noBtn.offsetWidth - 20;
+    const maxY = window.innerHeight - noBtn.offsetHeight - 20;
+
+    noBtn.style.left = Math.random() * maxX + "px";
+    noBtn.style.top = Math.random() * maxY + "px";
+  }
+
+  function sayYes() {
+    document.getElementById("screen1").classList.remove("active");
+    document.getElementById("screen2").classList.add("active");
+
+    const lines = [
+      "thank you for being my sweet valentine 🥺💖",
+      "i’m so excited to spend our first valentine together",
+      "you mean so much to me and you’re so special to me",
+      "i love you so so much",
+      "i hope you liked this",
+      "mwahh <3"
+    ];
+
+    typeText(lines, () => {
+      spawnConfetti(); // immediate confetti burst
+      startConfetti(); // then continuous confetti
+    });
+
+    // floating emojis
+    const totalHearts = 25;
+    const totalFeet = 10;
+    const totalLips = 10;
+    const emojis = [];
+    for (let i = 0; i < totalHearts; i++) emojis.push("💖");
+    for (let i = 0; i < totalFeet; i++) emojis.push("👣");
+    for (let i = 0; i < totalLips; i++) emojis.push("💋");
+
+    for (let i = 0; i < emojis.length; i++) {
+      const emojiDiv = document.createElement("div");
+      emojiDiv.className = "heart";
+      emojiDiv.style.left = Math.random() * window.innerWidth + "px";
+      emojiDiv.style.animationDuration = (2 + Math.random() * 2) + "s";
+      emojiDiv.innerHTML = emojis[i];
+      document.body.appendChild(emojiDiv);
+    }
+  }
+
+  // Multi-line typing with callback
+  function typeText(lines, callback) {
+    const typingDiv = document.getElementById("typing");
+    typingDiv.innerHTML = "";
+    let lineIndex = 0;
+    let charIndex = 0;
+
+    function typeLine() {
+      if (charIndex < lines[lineIndex].length) {
+        typingDiv.innerHTML += lines[lineIndex].charAt(charIndex);
+        charIndex++;
+        setTimeout(typeLine, 45);
+      } else {
+        typingDiv.innerHTML += "<br><br>";
+        lineIndex++;
+        charIndex = 0;
+
+        if (lineIndex < lines.length) {
+          setTimeout(typeLine, 600);
+        } else {
+          if (callback) callback(); // run after last line
+        }
+      }
+    }
+
+    typeLine();
+  }
+
+  // Continuous confetti
+  function startConfetti() {
+    const colors = ["#FF6B6B","#FFD93D","#6BCB77","#4D96FF","#FF6EC7"];
+    
+    function spawnConfettiBatch() {
+      const batch = 30;
+      for (let i = 0; i < batch; i++) {
+        const confetti = document.createElement("div");
+        confetti.className = "confetti";
+        confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+        confetti.style.left = Math.random() * window.innerWidth + "px";
+        confetti.style.top = "-20px";
+        document.body.appendChild(confetti);
+
+        const duration = 3000 + Math.random() * 2000;
+        const endX = confetti.offsetLeft + (Math.random() * 200 - 100);
+        const endY = window.innerHeight + 50;
+        const rotation = Math.random() * 720;
+
+        confetti.animate([
+          { transform: `translate(0,0) rotate(0deg)`, opacity: 1 },
+          { transform: `translate(${endX - confetti.offsetLeft}px, ${endY}px) rotate(${rotation}deg)`, opacity: 0 }
+        ], {
+          duration: duration,
+          easing: 'ease-out',
+          fill: 'forwards'
+        });
+
+        setTimeout(() => confetti.remove(), duration);
+      }
+      setTimeout(spawnConfettiBatch, 5000); // repeat every 5 seconds
+    }
+
+    spawnConfettiBatch();
+  }
+
+  // Immediate confetti burst
+  function spawnConfetti() {
+    const colors = ["#FF6B6B","#FFD93D","#6BCB77","#4D96FF","#FF6EC7"];
+    const batch = 50;
+    for (let i = 0; i < batch; i++) {
+      const confetti = document.createElement("div");
+      confetti.className = "confetti";
+      confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+      confetti.style.left = Math.random() * window.innerWidth + "px";
+      confetti.style.top = "-20px";
+      document.body.appendChild(confetti);
+
+      const duration = 3000 + Math.random() * 2000;
+      const endX = confetti.offsetLeft + (Math.random() * 200 - 100);
+      const endY = window.innerHeight + 50;
+      const rotation = Math.random() * 720;
+
+      confetti.animate([
+        { transform: `translate(0,0) rotate(0deg)`, opacity: 1 },
+        { transform: `translate(${endX - confetti.offsetLeft}px, ${endY}px) rotate(${rotation}deg)`, opacity: 0 }
+      ], {
+        duration: duration,
+        easing: 'ease-out',
+        fill: 'forwards'
+      });
+
+      setTimeout(() => confetti.remove(), duration);
+    }
+  }
+</script>
+
+</body>
+</html>
+
